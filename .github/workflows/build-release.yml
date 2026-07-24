@@ -1,0 +1,32 @@
+name: Build Chrome Extension Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Create extension ZIP
+      run: |
+        cd ${{ github.workspace }}
+        zip -r chrome-extension-meet-translator.zip \
+          manifest.json \
+          popup.html \
+          popup.js \
+          background.js \
+          content.js \
+          icons/ \
+          -x ".*"
+
+    - name: Upload release asset
+      uses: softprops/action-gh-release@v1
+      with:
+        files: chrome-extension-meet-translator.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
