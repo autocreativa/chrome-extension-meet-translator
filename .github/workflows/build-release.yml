@@ -1,8 +1,9 @@
 name: Build Chrome Extension Release
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -24,9 +25,25 @@ jobs:
           icons/ \
           -x ".*"
 
-    - name: Upload release asset
+    - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
+        name: ${{ github.ref_name }} - Google Meet Voice Translator
+        body: |
+          ## ${{ github.ref_name }} - Google Meet Voice Translator
+
+          ### Instalación
+          1. Descarga el `.zip` adjunto
+          2. Descomprime la carpeta
+          3. Ve a `chrome://extensions/`
+          4. Activa "Modo de desarrollador"
+          5. Click en "Cargar descomprimida" y selecciona la carpeta
+
+          ### Requisitos
+          - API Key de OpenRouter (obtener en https://openrouter.ai)
+          - Reemplazar `YOUR_API_KEY_HERE` en `content.js` con tu key
         files: chrome-extension-meet-translator.zip
+        draft: false
+        prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
