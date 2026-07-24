@@ -1,3 +1,8 @@
 node_modules/
 .DS_Store
 *.log
+.idea/
+.opencode/
+openspec/
+test.js
+test_translations.py
