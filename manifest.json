@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Google Meet Voice Translator",
+  "version": "1.0.0",
+  "description": "Translate spoken voice in Google Meet to a target language",
+  "permissions": ["storage", "activeTab", "webRequest", "webRequestBlocking"],
+  "host_permissions": ["https://openrouter.ai/*", "https://meet.google.com/*"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://meet.google.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icons/16.png",
+    "32": "icons/32.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  }
+}

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meet Translator</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #6c63ff;
+      --primary-dark: #5a52d5;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: #334155;
+    }
+    
+    body {
+      width: 400px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px 16px;
+      background: linear-gradient(135deg, #6c63ff 0%, #8b5cf6 100%);
+      position: relative;
+    }
+    
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 0;
+      right: 0;
+      height: 20px;
+      background: var(--bg);
+      border-radius: 20px 20px 0 0;
+    }
+    
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo {
+      width: 40px;
+      height: 40px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    
+    .subtitle {
+      font-size: 11px;
+      opacity: 0.8;
+      margin-top: 2px;
+    }
+    
+    .settings-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      backdrop-filter: blur(10px);
+    }
+    
+    .settings-btn:hover {
+      background: rgba(255,255,255,0.25);
+      transform: rotate(30deg);
+    }
+    
+    .main-panel {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .status-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .status-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      transition: all 0.3s;
+    }
+    
+    .status-icon.idle {
+      background: rgba(148,163,184,0.1);
+      border: 2px solid var(--border);
+    }
+    
+    .status-icon.active {
+      background: rgba(34,197,94,0.1);
+      border: 2px solid var(--success);
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+      50% { box-shadow: 0 0 0 12px rgba(34,197,94,0); }
+    }
+    
+    .status-text {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .status-detail {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    
+    .toggle-btn {
+      width: 100%;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      color: white;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 15px rgba(108,99,255,0.3);
+    }
+    
+    .toggle-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(108,99,255,0.4);
+    }
+    
+    .toggle-btn:active {
+      transform: translateY(0);
+    }
+    
+    .toggle-btn.active {
+      background: linear-gradient(135deg, var(--danger) 0%, #b91c1c 100%);
+      box-shadow: 0 4px 15px rgba(239,68,68,0.3);
+    }
+    
+    .config-panel {
+      display: none;
+      padding: 24px;
+      overflow-y: auto;
+      max-height: 480px;
+    }
+    
+    .config-panel.visible { display: block; }
+    
+    .config-panel h2 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+    
+    .form-group {
+      margin-bottom: 18px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--card);
+      color: var(--text);
+      outline: none;
+      transition: all 0.2s;
+    }
+    
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
+    }
+    
+    .form-group select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394a3b8'%3E%3Cpath d='M7 10l5 6 5-6z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 16px;
+      padding-right: 36px;
+    }
+    
+    .btn-row {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .save-btn {
+      flex: 1;
+      padding: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      color: white;
+      background: var(--primary);
+      transition: all 0.2s;
+    }
+    
+    .save-btn:hover { background: var(--primary-dark); }
+    
+    .cancel-btn {
+      flex: 1;
+      padding: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    
+    .cancel-btn:hover {
+      border-color: var(--text-muted);
+      color: var(--text);
+    }
+    
+    .mini-indicator {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #6c63ff 0%, #8b5cf6 100%);
+      border-radius: 50%;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 20px rgba(108,99,255,0.5);
+      z-index: 99999;
+      cursor: pointer;
+      animation: pulse 2s infinite;
+      transition: all 0.2s;
+    }
+    
+    .mini-indicator.hidden { display: none; }
+    
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 4px 20px rgba(108,99,255,0.5); }
+      50% { box-shadow: 0 4px 30px rgba(108,99,255,0.8); }
+    }
+    
+    .flow-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-top: 12px;
+    }
+    
+    .flow-indicator .lang {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(108,99,255,0.15);
+      color: var(--primary);
+    }
+    
+    .flow-indicator .arrow {
+      font-size: 16px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left">
+      <div class="logo">🌐</div>
+      <div>
+        <div class="title">Meet Translator</div>
+        <div class="subtitle">Traducción en tiempo real</div>
+      </div>
+    </div>
+    <button class="settings-btn" id="settingsBtn">⚙️</button>
+  </div>
+
+  <div class="main-panel" id="mainPanel">
+    <div class="status-card">
+      <div class="status-icon idle" id="statusIcon">⏸️</div>
+      <div class="status-text" id="statusText">Listo para traducir</div>
+      <div class="status-detail" id="statusDetail">Abre Google Meet primero</div>
+    </div>
+    
+    <div class="flow-indicator" id="flowIndicator">
+      <span class="lang" id="sourceLangDisplay">Auto-detectado</span>
+      <span class="arrow">→</span>
+      <span class="lang" id="targetLangDisplay">English</span>
+    </div>
+    
+    <button class="toggle-btn" id="toggleBtn">Iniciar Traducción</button>
+  </div>
+
+  <div class="config-panel" id="configPanel">
+    <h2>⚙️ Configuración</h2>
+
+    <div class="form-group">
+      <label>Idioma de origen</label>
+      <select id="sourceLang">
+        <option value="es" selected>Español</option>
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="pt">Português</option>
+        <option value="it">Italiano</option>
+        <option value="zh">中文</option>
+        <option value="ja">日本語</option>
+        <option value="ru">Русский</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Idioma de destino</label>
+      <select id="targetLang">
+        <option value="en" selected>English</option>
+        <option value="es">Español</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="pt">Português</option>
+        <option value="it">Italiano</option>
+        <option value="zh">中文</option>
+        <option value="ja">日本語</option>
+        <option value="ru">Русский</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Tipo de voz</label>
+      <select id="voiceType">
+        <option value="auto">Automática</option>
+        <option value="male">Hombre</option>
+        <option value="female">Mujer</option>
+      </select>
+    </div>
+    <div class="btn-row">
+      <button class="save-btn" id="saveBtn">Guardar</button>
+      <button class="cancel-btn" id="cancelBtn">Cancelar</button>
+    </div>
+  </div>
+
+  <div class="mini-indicator hidden" id="miniIndicator">🎙️</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
