@@ -1,0 +1,7 @@
+# OpenSpec Configuration
+
+projects:
+  - name: chrome-extension-meet-translator
+    path: .
+    specs:
+      - virtual-mic
