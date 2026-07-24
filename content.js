@@ -14,7 +14,7 @@ const settings = {
   targetLang: 'en',
   apiUrl: 'https://openrouter.ai/api/v1/chat/completions',
   voiceType: 'auto',
-  apiKey: 'YOUR_API_KEY_HERE',
+  apiKey: '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',
   isTranslating: false
 };
 
